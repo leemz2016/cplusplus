@@ -1,0 +1,8 @@
+﻿  DLLMain.cpp
+c:\users\risk\desktop\blackbone-dumper-master\bbdumper\dllmain.cpp(26): warning C4244: “参数”: 从“ULONG64”转换到“DWORD”，可能丢失数据
+c:\users\risk\desktop\blackbone-dumper-master\bbdumper\dllmain.cpp(53): warning C4100: “lpReserved”: 未引用的形参
+c:\users\risk\desktop\blackbone-dumper-master\bbdumper\dllmain.cpp(53): warning C4100: “hModule”: 未引用的形参
+DLLMain.obj : error LNK2019: 无法解析的外部符号 MH_Initialize，该符号在函数 "void __cdecl Start(void)" (?Start@@YAXXZ) 中被引用
+DLLMain.obj : error LNK2019: 无法解析的外部符号 MH_CreateHook，该符号在函数 "void __cdecl Start(void)" (?Start@@YAXXZ) 中被引用
+DLLMain.obj : error LNK2019: 无法解析的外部符号 MH_EnableHook，该符号在函数 "void __cdecl Start(void)" (?Start@@YAXXZ) 中被引用
+C:\Users\Risk\Desktop\BlackBone-Dumper-master\x64\Debug\BBDumper.dll : fatal error LNK1120: 3 个无法解析的外部命令
