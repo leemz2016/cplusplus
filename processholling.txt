@@ -1,6 +1,0 @@
-1、创建一个挂起的svchost进程
-2、找svchost进程的OEP备用
-3、在svchost中开辟几块空间 存放自己的PeLoader、PE文件的ShellCode、参数结构等
-4、将PeLoader、ShellCode、参数结构写入svchost中
-5、Hook svchost的OEP 改为PeLoader
-6、恢复svchost进程执行PeLoader加载ShellCode并运行
