@@ -1,0 +1,28 @@
+文本查找 alt+t ,ctrl +t
+二进制查找alt+b, ctrl +b
+
+使用flirt签名识别代码
+pcf.exe xx.lib xxx.pat
+sigmake.exe xxx.pat xxx.sig
+
+导入文件file-load c header file
+
+od调试定位自己程序关键位置
+
+代码中插入int3 、mov eax eax
+特征码代码
+加载符号pdb
+字符串搜索
+
+od调试别人程序
+调试符号(...)
+字符串与格式化字符串
+调试信息api
+特征码定位
+功能api
+
+od模块代码下段 alt+m 选中模块代码 按f2 触发时自动下段
+trace记录 view ->run trace 右键记录到文件
+shift + f11 开始记录 f9
+
+忽略异常 int3 单步中断 非法内存访问 fpu异常 整数除0等
