@@ -1,0 +1,8 @@
+文本查找 alt+t ,ctrl +t
+二进制查找alt+b, ctrl +b
+
+使用flirt签名识别代码
+pcf.exe xx.lib xxx.pat
+sigmake.exe xxx.pat xxx.sig
+
+导入文件file-load c header file
