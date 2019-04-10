@@ -1,0 +1,34 @@
+段寄存器
+cs ds  es ss 
+fs -在x64系统中32位程序中与teb peb veh 有关 fs:[0x180] teb 
+gs -在x64中与teb peb veh 有关 gs:[0x60] peb
+
+cr0-cr4 与x86 一样
+
+系统寄存器
+msr_lstar 0xc0000082 syscall64
+msr_kernel_gs 0xc0000102 swapgs
+
+指令寻址
+1.rip相对地址
+当前地址(无符号)+地址的偏移(有符号)+指令长度
+地址偏移是一个long类型的 
+
+2.绝对地址
+x86访问数据大部分事绝对地址访问的
+
+call 与jmp的变化
+x86中用绝对地址call/jump
+在x64中是rip相对地址call
+FF15 00405000 CALL DWORD PTR [00405000]   X86下
+FF15 004050000 CALL DWORD PTR[当前地址+00405000] x64下
+
+传参模式
+第一个参数rcx
+第二个参数rdx
+第三个参数r8
+第四个参数r9
+更多参数使用rsp传递、push
+
+x64下对栈的操作一般不通过rbp,参数一般不会push而是用rsp直接写入
+参数取出也是从rsp取出,rsp里一般会保存通过寄存器传递进来的参数 一般开一块空间sub rsp 28
