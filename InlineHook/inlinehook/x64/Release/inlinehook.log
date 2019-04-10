@@ -1,0 +1,31 @@
+﻿  stdafx.cpp
+  assembler.cpp
+  compiler.cpp
+  compilercontext.cpp
+  constpool.cpp
+  containers.cpp
+  cpuinfo.cpp
+  globals.cpp
+  hlstream.cpp
+  logger.cpp
+  operand.cpp
+  podvector.cpp
+  runtime.cpp
+  utils.cpp
+  vmem.cpp
+  zone.cpp
+  x86assembler.cpp
+  x86compiler.cpp
+  x86compilercontext.cpp
+  x86compilerfunc.cpp
+  x86inst.cpp
+  正在编译...
+  x86operand.cpp
+  x86operand_regs.cpp
+  distorm3.cpp
+  HookEngine.cpp
+c:\users\risk\downloads\2016基础学习资料\第十一课\hook\inlinehook\inlinehook\hookengine.cpp(51): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“size_t”
+  c:\users\risk\downloads\2016基础学习资料\第十一课\hook\inlinehook\inlinehook\hookengine.cpp(51): note: 请考虑在格式字符串中使用“%zd”
+c:\users\risk\downloads\2016基础学习资料\第十一课\hook\inlinehook\inlinehook\hookengine.cpp(65): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+C:\vs2017\IDE\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1397,5): warning MSB8012: TargetPath(C:\Users\Risk\Downloads\2016基础学习资料\第十一课\hook\inlinehook\x64\Release\inlinehook.lib) 与 Library 的 OutputFile 属性值(C:\Users\Risk\Downloads\2016基础学习资料\第十一课\hook\inlinehook\lib\inlinehook.lib)不匹配。这可能导致项目生成不正确。若要更正此问题，请确保 $(OutDir)、$(TargetName) 和 $(TargetExt) 属性值与 %(Lib.OutputFile) 中指定的值匹配。
+  inlinehook.vcxproj -> C:\Users\Risk\Downloads\2016基础学习资料\第十一课\hook\inlinehook\x64\Release\inlinehook.lib
