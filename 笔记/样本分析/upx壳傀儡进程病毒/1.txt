@@ -1,1 +1,240 @@
+//摘自看雪网友代码
+#include <windows.h>
+int main()
+{
+    //获取句柄
+    HMODULE hModule = NULL;
+    hModule = GetModuleHandle(0);
 
+    if (hModule == NULL)
+    {
+        return -1;
+    }
+
+    //正常的获取各种头文件
+    PIMAGE_DOS_HEADER pDosHdr = (PIMAGE_DOS_HEADER)hModule;
+    PIMAGE_NT_HEADERS pNtHdr = (PIMAGE_NT_HEADERS)(pDosHdr->e_lfanew + (ULONG_PTR)hModule);
+    if (pNtHdr->Signature != IMAGE_NT_SIGNATURE)
+    {
+        return -1;
+    }
+    PIMAGE_OPTIONAL_HEADER pOpHdr = &pNtHdr->OptionalHeader;
+    DWORD nSecNum = pNtHdr->FileHeader.NumberOfSections-1; //获取最后一个字段的编号
+    PIMAGE_SECTION_HEADER pSecHdr = IMAGE_FIRST_SECTION(pNtHdr);
+
+    //去读取最后一个区段，然后对整个区段的内容进行解密
+
+    IMAGE_SECTION_HEADER pShellSecHdr = pSecHdr[nSecNum];
+    //判断区段是不是要找的区段
+    char szTemName[8] = {};
+    memcpy(szTemName, pShellSecHdr.Name, 8);
+
+    DWORD dwDecryptKey = pShellSecHdr.Misc.VirtualSize >> 0x4;//目前的解密key,暂时用这种简单的方法
+    //进行解密
+    char* deCryptAddr = (char*)(pShellSecHdr.VirtualAddress + (ULONG_PTR)hModule);
+
+
+    //解密成功
+    //创建一个进程
+    //首先获取当前进程的路径
+    wchar_t FilePath[MAX_PATH] = {};
+    GetModuleFileName(hModule, FilePath, MAX_PATH);
+
+    STARTUPINFOW si = {};
+    PROCESS_INFORMATION pi = {};
+    //以挂起的方式创建进程
+    if (CreateProcess(FilePath, NULL, NULL, NULL, FALSE, CREATE_SUSPENDED |CREATE_NEW_CONSOLE,/*已挂起的方式创建*/NULL, NULL, &si, &pi) == 0)
+    {
+        MessageBoxA(0, "进程创建失败", 0, 0);
+    }
+
+
+    //获取新创建的线程上下文
+    CONTEXT context = {};
+    context.ContextFlags = CONTEXT_FULL;
+    if (!GetThreadContext(pi.hThread, &context))
+    {
+        MessageBoxA(0, "获取线程上下文失败", 0, 0);
+        return -1;
+    }
+
+    DWORD dwVirBaseAddr = 0;
+
+    if (!ReadProcessMemory(pi.hProcess,(LPCVOID)(context.Ebx+8),&dwVirBaseAddr,sizeof(PVOID),NULL))
+    {
+        return -1;
+    }
+    printf("dwVirBaseAddr:%x\n", dwVirBaseAddr);
+
+    HMODULE hNtModule = NULL;
+    hNtModule = GetModuleHandle(L"ntdll.dll");
+    if (hNtModule==NULL)
+    {
+        hNtModule = LoadLibrary(L"ntdll.dll");
+        if (hNtModule==NULL)
+        {
+            return -1;
+        }
+    }
+
+
+    typedef NTSTATUS(NTAPI *PFNZwUnmapViewOfSection) (HANDLE ProcessHandle, PVOID BaseAddress);
+
+    PFNZwUnmapViewOfSection pfnZwUnmapViewOfSection = (PFNZwUnmapViewOfSection)GetProcAddress(hNtModule, "ZwUnmapViewOfSection");
+
+    if (pfnZwUnmapViewOfSection ==NULL)
+    {
+        MessageBoxA(0, "获取镜像函数失败", 0, 0);
+        return -1;
+    }
+
+    system("pause");
+    //卸载掉目标进程的代码
+    ULONG isSucess = 0;
+    isSucess= pfnZwUnmapViewOfSection(pi.hProcess, (LPVOID)dwVirBaseAddr);
+
+    //在写入之前，首先要获取这个pe文件的各种头文件
+    //获取dos头
+    PIMAGE_DOS_HEADER pPeDosHdr = (PIMAGE_DOS_HEADER)(pShellSecHdr.VirtualAddress + (ULONG_PTR)hModule);
+    printf("dos头的部分内容：%s\n", (char*)pPeDosHdr);
+    //////////////////////////////////////////////////////////////////////////
+
+
+    PIMAGE_NT_HEADERS pPeNtHdr = (PIMAGE_NT_HEADERS)(pPeDosHdr->e_lfanew + (ULONG_PTR)pPeDosHdr);
+    printf("nt头的部分内容：%s\n", (char*)pPeNtHdr);
+    //////////////////////////////////////////////////////////////////////////
+    //测试
+
+
+    DWORD dwPeSize = pPeNtHdr->OptionalHeader.SizeOfImage;
+    printf("pe大小%x\n", dwPeSize);
+    system("pause");
+    LPVOID  dwPeVirAddr = 0;
+    DWORD dwjudge = pPeNtHdr->OptionalHeader.DllCharacteristics;
+
+    printf("属性%x:\n", pPeNtHdr->OptionalHeader.DllCharacteristics);
+    if (pPeNtHdr->OptionalHeader.DllCharacteristics == 0x8140)
+    {
+        printf("有动态基址\n");
+        dwPeVirAddr = VirtualAllocEx(pi.hProcess, 0, dwPeSize, MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+
+        if (dwPeVirAddr == 0)
+        {
+            //申请失败，可能有重定位表
+            //这个时候其实可以在任意地方申请，然后修复重定位表
+            //稍等再说
+
+            MessageBoxA(0, "申请空间失败", 0, 0);
+            TerminateProcess(pi.hProcess, -1);
+            return -1;
+
+        }
+        //然后手动修复重定位表
+        IMAGE_BASE_RELOCATION* pRelTab;
+        pRelTab = (IMAGE_BASE_RELOCATION*)
+            (pPeNtHdr->OptionalHeader.DataDirectory[5].VirtualAddress + (ULONG_PTR)pPeDosHdr);
+
+        /*!
+        * \brief 重定位块的偏移结构
+        */
+        struct TypeOffset {
+            WORD Offset : 12;  // (1) 大小为12Bit的重定位偏移
+            WORD Type : 4;    // (2) 大小为4Bit的重定位信息类型值
+        };
+
+        while (pRelTab->VirtualAddress != 0) {
+            TypeOffset* tofs;
+            DWORD count;
+            count = (pRelTab->SizeOfBlock - 8) / 2;
+            printf("共有%d次\n", count);
+            tofs = (TypeOffset*)(pRelTab + 1);
+            for (DWORD i = 0; i < count; ++i) {
+                if (tofs[i].Type == 3) {
+
+                    SIZE_T* pFixVa = (SIZE_T*)(tofs[i].Offset + pRelTab->VirtualAddress + (ULONG_PTR)pPeDosHdr);
+                    // 替换加载基址
+                    *pFixVa -= pPeNtHdr->OptionalHeader.ImageBase; // 默认加载基址
+                    *pFixVa += (DWORD)dwPeVirAddr; // 新的加载基址
+                    printf("\r --------------------修复完成%d次\n", i);
+                                             // 替换段首RVA
+                    //*pFixVa -= oldSectionRva; // 旧的区段段首RVA
+                    //*pFixVa += newSectionRva; // 新的区段段首RVA
+                }
+            }
+
+            // 找到下一个重定位块
+            pRelTab = (IMAGE_BASE_RELOCATION*)
+                ((SIZE_T)pRelTab + pRelTab->SizeOfBlock);
+        }
+    }
+    else {
+        printf("没有动态基址\n");
+        dwPeVirAddr = VirtualAllocEx(pi.hProcess, (LPVOID)pPeNtHdr->OptionalHeader.ImageBase, dwPeSize, MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    }
+
+
+    printf("申请的空间地址:%x\n", dwPeVirAddr);
+
+    if (dwPeVirAddr==0)
+    {
+        //申请失败，可能有重定位表
+        //这个时候其实可以在任意地方申请，然后修复重定位表
+        //稍等再说
+
+        //先return 出去吧
+        MessageBoxA(0, "申请空间失败", 0, 0);
+        TerminateProcess(pi.hProcess, -1);
+        return -1;
+
+    }
+    else {
+        printf("申请空间成功：%x\n", dwPeVirAddr);
+    }
+
+    //然后把整个区段都复制写过去
+    DWORD dwRealy = 0;
+   //首先要重新设置加载基址
+    DWORD dwIamgeBase = pPeNtHdr->OptionalHeader.ImageBase;
+
+
+    if (pPeNtHdr->OptionalHeader.DllCharacteristics == 0x8140)
+    {
+        WriteProcessMemory(pi.hProcess, (LPVOID)(context.Ebx + 8), (LPCVOID)&(dwPeVirAddr), sizeof(PVOID), &dwRealy);
+        printf("OEP实际写入大小:%x\n", dwRealy);
+    }
+    else {
+
+        WriteProcessMemory(pi.hProcess, (LPVOID)(context.Ebx + 8), (LPCVOID)&(dwIamgeBase), sizeof(PVOID), &dwRealy);
+        printf("OEP实际写入大小:%x\n", dwRealy);
+    }
+
+
+    WriteProcessMemory(pi.hProcess, dwPeVirAddr, (LPVOID)(pPeDosHdr), pPeNtHdr->OptionalHeader.SizeOfImage, &dwRealy);
+    printf("实际写入大小:%x\n", dwRealy);
+
+
+    //然后重新设置OEP
+    context.Eax = dwIamgeBase+pPeNtHdr->OptionalHeader.AddressOfEntryPoint;
+
+    if (!SetThreadContext(pi.hThread, &context))
+    {
+        printf("设置线程上下文失败\n");
+    }
+    else {
+        printf("设置线程上下文成功\n");
+    }
+
+
+
+    //然后重新恢复线程
+    printf("准备回复线程\n");
+
+    ResumeThread(pi.hThread);
+
+
+    TerminateProcess(GetCurrentProcess(), -1);
+
+    return 0;
+}
+
+}
