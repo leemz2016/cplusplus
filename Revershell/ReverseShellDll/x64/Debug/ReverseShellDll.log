@@ -1,0 +1,6 @@
+﻿  dllmain.cpp
+c:\c++\reverseshelldll\reverseshelldll\dllmain.cpp(58): warning C4996: 'WSASocketA': Use WSASocketW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\windows kits\10\include\10.0.17134.0\um\winsock2.h(3415): note: 参见“WSASocketA”的声明
+c:\c++\reverseshelldll\reverseshelldll\dllmain.cpp(63): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  c:\windows kits\10\include\10.0.17134.0\um\winsock2.h(1830): note: 参见“inet_addr”的声明
+  ReverseShellDll.vcxproj -> C:\C++\ReverseShellDll\x64\Debug\ReverseShellDll.dll
