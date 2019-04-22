@@ -25,7 +25,7 @@ release版<br>
 <br>
 
 do-while循环
-==========
+========
 有一个有条件判断的向上跳转<br>
 ![](https://github.com/leemz2016/cplusplus/blob/master/%E7%AC%94%E8%AE%B0/img/do-while.png)<br>
 特点总结:<br>
@@ -36,7 +36,7 @@ jxx tag<br>
 <br>
 <br>
 while循环
-=======
+======
 ![](https://github.com/leemz2016/cplusplus/blob/master/%E7%AC%94%E8%AE%B0/img/while.png)<br>
 特点总结：<br>
 while_tag:<br>
@@ -48,5 +48,23 @@ cmp xxx,xxx<br>
 jxx while_tag<br>
 xxx<br>
 while_end-tag<br>
+<br>
+<br>
+<br>
+for 循环
+======
+![](https://github.com/leemz2016/cplusplus/blob/master/%E7%AC%94%E8%AE%B0/img/for.png)<br>
+特点总结：<br>
+for_start_tag:<br>
+初始化<br>
+jmp cmp_tag<br>
+setp_tag:<br>
+步长<br>
+cmp_tag:<br>
+反条件判断<br>
+jxx for_end_tag<br>
+xxxx<br>
+xxxx<br>
+jxx setp_tag<br>
 
 
