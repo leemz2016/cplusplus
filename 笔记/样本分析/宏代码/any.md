@@ -1,8 +1,9 @@
 样本来源于卡饭,一款excel宏病毒<br>
 使用微软offeicescan提取出宏代码。<br>
-
+![](https://github.com/leemz2016/cplusplus/blob/master/%E7%AC%94%E8%AE%B0/img/%E6%8F%90%E5%8F%96.png)<br>
 thisworkbook.vbs中创建了3个文件 C:\Users\Public\Af.vbs c:\Users\Public\Af.bat C:\Users\Public\Af2.bat<br>
 做了混淆，使用vb调试器下文件写入地方下段可以看到3个文件中的内容，bat脚本中%%中内容为注释可以去掉<br>
+![](https://github.com/leemz2016/cplusplus/blob/master/%E7%AC%94%E8%AE%B0/img/%E8%84%9A%E6%9C%AC.png)<br>
 <br>
 af2.bat:<br>
 ```powershell
