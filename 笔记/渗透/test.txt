@@ -1,0 +1,10 @@
+3层代理：
+本机->  TeamViewer -> 服务器 -> VPN（本机通过TeamViewer连接远端Windows Server，流量已经通过TeamViewer服务器的中转实现了一层代理）
+
+4层代理：
+本机-> VPN 1 -> TeamViewer -> 服务器 -> VPN 2  （VPN 1我用的是香港的VPN出口，速度快）
+
+5层代理：
+本机-> VPN-> Tor -> TeamViewer -> 服务器(usa) -> VPN  （第二层使用的是Proxychains本地代理Tor启动TeamViewer)
+
+建立连接以后teamviewer与terminal server直接连接了,走的UDP,没有attack记录的
