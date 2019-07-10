@@ -8,3 +8,13 @@
 本机-> VPN-> Tor -> TeamViewer -> 服务器(usa) -> VPN  （第二层使用的是Proxychains本地代理Tor启动TeamViewer)
 
 建立连接以后teamviewer与terminal server直接连接了,走的UDP,没有attack记录的
+
+
+用2层私人VPN
+网监　→　服务器IP　→　VPN2的IP　→　入侵VPN2服务器　→　日志查VPN1　→　路由日志　→　链接者IP　→　链接者ISP　→　办网档案
+
+用2层共用VPN
+网监　→　服务器IP　→　VPN2的IP　→　入侵VPN2服务器　→　日志查VPN1　→　日志　→　链接者IP　→　链接者ISP　→　办网档案
+
+webbug邮件探测ip
+gmail显示的是服务器的地址,hotmail显示的IP地址是不对的.国内的邮件服务器大部分是可以的
