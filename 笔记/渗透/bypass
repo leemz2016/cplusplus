@@ -1,0 +1,6 @@
+select.``.schema_name from information_schema.schemata;
+select`verion`();
+select+id+1-1.from xxx;
+select@^1.from xxx;
+/*!40000select*/id from xxx;
+二进制文件上传
